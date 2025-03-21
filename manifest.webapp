@@ -1,0 +1,26 @@
+{
+  "name": "Web Links",
+  "description": "A bookmark manager for KaiOS devices",
+  "version": "1.0.0",
+  "launch_path": "/index.html",
+  "icons": {
+    "56": "/icons/icon56x56.png",
+    "112": "/icons/icon112x112.png"
+  },
+  "developer": {
+    "name": "KaiOS Web Links",
+    "url": "https://github.com/kaios-weblinks"
+  },
+  "type": "web",
+  "permissions": {
+    "systemXHR": {
+      "description": "Required to access the web"
+    }
+  },
+  "orientation": "portrait",
+  "fullscreen": "false",
+  "chrome": {
+"statusbar": "overlap"
+},
+  "default_locale": "en"
+}

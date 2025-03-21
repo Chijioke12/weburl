@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>KaiOS Web Links</title>
+  <style>
+    /* Reset and base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Open Sans', Arial, sans-serif;
+      font-size: 14px;
+      background-color: #f5f5f5;
+      color: #333;
+      overflow: hidden;
+      max-width: 100vw;
+    }
+
+    body.dark {
+      background-color: #222;
+      color: #eee;
+    }
+    
+    /* KaiOS specific styles - optimized for 240x320 resolution */
+    .kai-screen {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      margin: 0 auto;
+      max-width: 480px; /* larger screens will be centered */
+    }
+    
+    /* Main Content Area - Positioned to respect the native KaiOS status bar */
+    .content-area {
+      position: absolute;
+      top: 0; /* Start from top - KaiOS will handle status bar */
+      bottom: 20px; /* softkey bar height */
+      width: 100%;
+      overflow-y: auto;
+    }
+    
+    /* Softkey Bar */
+    .softkey-bar {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 20px;
+      background-color: #e0e0e0;
+      color: #333;
+      display: block;
+      padding: 0 8px;
+      line-height: 20px;
+      font-size: 12px;
+      border-top: 1px solid #ccc;
+    }
+    
+    .dark .softkey-bar {
+      background-color: #111;
+      color: #eee;
+      border-top: 1px solid #444;
+    }
+    
+    .softkey-left {
+      float: left;
+      color: #5D5CDE;
+    }
+    
+    .softkey-center {
+      text-align: center;
+      margin: 0 50px;
+      color: #5D5CDE;
+    }
+    
+    .softkey-right {
+      float: right;
+      color: #5D5CDE;
+    }
+    
+    .dark .softkey-left,
+    .dark .softkey-center, 
+    .dark .softkey-right {
+      color: #7F7EE7;
+    }
+    
+    /* List items */
+    .list-header {
+      padding: 6px 8px 4px;
+      font-weight: bold;
+      color: #5D5CDE;
+      font-size: 13px;
+    }
+    
+    .dark .list-header {
+      color: #7F7EE7;
+    }
+    
+    .list-item {
+      padding: 8px;
+      border-bottom: 1px solid #e6e6e6;
+      position: relative;
+      min-height: 42px;
+    }
+    
+    .dark .list-item {
+      border-bottom: 1px solid #333;
+    }
+    
+    .list-item.focused {
+      background-color: rgba(93, 92, 222, 0.15);
+      outline: 1px solid #5D5CDE;
+    }
+    
+    .dark .list-item.focused {
+      background-color: rgba(127, 126, 231, 0.2);
+      outline: 1px solid #7F7EE7;
+    }
+    
+    .item-icon {
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 30px;
+      height: 30px;
+      background-color: #f0f0f0;
+      border-radius: 4px;
+      text-align: center;
+      line-height: 30px;
+      font-size: 18px;
+    }
+    
+    .dark .item-icon {
+      background-color: #333;
+    }
+    
+    .item-content {
+      margin-left: 38px;
+    }
+    
+    .item-title {
+      font-weight: bold;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .item-subtitle {
+      font-size: 11px;
+      color: #666;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .dark .item-subtitle {
+      color: #aaa;
+    }
+    
+    /* Action button */
+    .action-button {
+      margin: 8px;
+      padding: 8px;
+      background-color: #f0f0f0;
+      border-radius: 4px;
+      text-align: center;
+      color: #5D5CDE;
+      font-weight: bold;
+    }
+    
+    .dark .action-button {
+      background-color: #333;
+      color: #7F7EE7;
+    }
+    
+    .action-button.focused {
+      background-color: rgba(93, 92, 222, 0.15);
+      outline: 1px solid #5D5CDE;
+    }
+    
+    .dark .action-button.focused {
+      background-color: rgba(127, 126, 231, 0.2);
+      outline: 1px solid #7F7EE7;
+    }
+    
+    /* Form elements */
+    .form-group {
+      padding: 8px;
+      margin-bottom: 8px;
+    }
+    
+    .input-label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .dark .input-label {
+      color: #aaa;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #fff;
+      font-size: 16px; /* Prevent zooming on mobile */
+    }
+    
+    .dark .form-input {
+      background-color: #333;
+      border-color: #444;
+      color: #eee;
+    }
+    
+    .form-input.focused {
+      border-color: #5D5CDE;
+      outline: 1px solid #5D5CDE;
+    }
+    
+    .dark .form-input.focused {
+      border-color: #7F7EE7;
+      outline: 1px solid #7F7EE7;
+    }
+    
+    /* Delete button */
+    .delete-button {
+      margin-top: 8px;
+      color: #e53935;
+    }
+    
+    .dark .delete-button {
+      color: #f44336;
+    }
+    
+    /* Empty state */
+    .empty-state {
+      padding: 20px;
+      text-align: center;
+      color: #666;
+    }
+    
+    .dark .empty-state {
+      color: #aaa;
+    }
+    
+    .empty-state-icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    
+    /* Back button */
+    .back-button {
+      display: inline-block;
+      margin-right: 4px;
+    }
+    
+    .screen-title {
+      display: inline-block;
+      font-weight: bold;
+      color: #5D5CDE;
+    }
+    
+    .dark .screen-title {
+      color: #7F7EE7;
+    }
+    
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      z-index: 1000;
+    }
+    
+    /* Cursor mode */
+    .cursor-help {
+      position: fixed;
+      bottom: 30px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 10px;
+      color: #666;
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 2px 0;
+      z-index: 100;
+    }
+    
+    .dark .cursor-help {
+      color: #aaa;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+    
+    .cursor-key {
+      font-weight: bold;
+      color: #5D5CDE;
+    }
+    
+    .dark .cursor-key {
+      color: #7F7EE7;
+    }
+    
+    .virtual-cursor {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      pointer-events: none;
+      z-index: 1000;
+      display: none;
+    }
+    
+    .cursor-indicator {
+      position: fixed;
+      top: 24px;
+      right: 8px;
+      background-color: #5D5CDE;
+      color: white;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      z-index: 100;
+      display: none;
+    }
+    
+    .dark .cursor-indicator {
+      background-color: #7F7EE7;
+    }
+    
+    /* Screens */
+    .screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+    }
+    
+    .screen.active {
+      display: block;
+    }
+    
+    /* Hide scrollbars */
+    .content-area::-webkit-scrollbar {
+      width: 0px;
+      background: transparent;
+    }
+    
+    /* Add some padding at the bottom to ensure scrolling reaches the bottom content */
+    .content-inner {
+      padding-bottom: 20px;
+    }
+
+    /* Add padding at the top for the status bar space */
+    .content-inner {
+      padding-top: 28px; /* ~28px is the typical height of KaiOS status bar */
+    }
+  </style>
+</head>
+<body>
+  <div class="kai-screen">
+    <!-- Categories Screen -->
+    <div id="categories-screen" class="screen active">
+      <div class="content-area">
+        <div class="content-inner">
+          <div class="list-header">Categories</div>
+          <div id="category-list"></div>
+          
+          <div id="add-category-btn" class="action-button" data-nav-index="1000">
+            Add Category
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Links Screen -->
+    <div id="links-screen" class="screen">
+      <div class="content-area">
+        <div class="content-inner">
+          <div class="list-header">
+            <span id="back-to-categories" class="back-button" data-nav-index="0">?</span>
+            <span id="category-title" class="screen-title">Category Name</span>
+          </div>
+          <div id="link-list"></div>
+          
+          <div id="add-link-btn" class="action-button" data-nav-index="1000">
+            Add Link
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Edit Category Screen -->
+    <div id="edit-category-screen" class="screen">
+      <div class="content-area">
+        <div class="content-inner">
+          <div class="list-header">
+            <span id="back-from-category-edit" class="back-button" data-nav-index="0">?</span>
+            <span id="edit-category-title" class="screen-title">Add Category</span>
+          </div>
+          
+          <div class="form-group">
+            <label class="input-label" for="category-name">Category Name</label>
+            <input type="text" id="category-name" class="form-input" data-nav-index="1" placeholder="e.g. Settings, News, Social">
+          </div>
+          
+          <div class="form-group">
+            <label class="input-label" for="category-icon">Icon (emoji)</label>
+            <input type="text" id="category-icon" class="form-input" data-nav-index="2" placeholder="e.g. ??, ??, ??">
+          </div>
+          
+          <div id="save-category-btn" class="action-button" data-nav-index="3">
+            Save Category
+          </div>
+          
+          <div id="delete-category-btn" class="action-button delete-button" data-nav-index="4" style="display: none;">
+            Delete Category
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Edit Link Screen -->
+    <div id="edit-link-screen" class="screen">
+      <div class="content-area">
+        <div class="content-inner">
+          <div class="list-header">
+            <span id="back-from-link-edit" class="back-button" data-nav-index="0">?</span>
+            <span id="edit-link-title" class="screen-title">Add Link</span>
+          </div>
+          
+          <div class="form-group">
+            <label class="input-label" for="link-name">Name</label>
+            <input type="text" id="link-name" class="form-input" data-nav-index="1" placeholder="e.g. Facebook Settings">
+          </div>
+          
+          <div class="form-group">
+            <label class="input-label" for="link-url">URL</label>
+            <input type="url" id="link-url" class="form-input" data-nav-index="2" placeholder="https://...">
+          </div>
+          
+          <div class="form-group">
+            <label class="input-label" for="link-icon">Icon (emoji)</label>
+            <input type="text" id="link-icon" class="form-input" data-nav-index="3" placeholder="e.g. ??, ??, ??">
+          </div>
+          
+          <div id="save-link-btn" class="action-button" data-nav-index="4">
+            Save Link
+          </div>
+          
+          <div id="delete-link-btn" class="action-button delete-button" data-nav-index="5" style="display: none;">
+            Delete Link
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Softkey Bar -->
+    <div class="softkey-bar">
+      <div class="softkey-left" id="softkey-left">Options</div>
+      <div class="softkey-center" id="softkey-center">Select</div>
+      <div class="softkey-right" id="softkey-right">Back</div>
+    </div>
+    
+    <!-- Cursor mode help -->
+    <div class="cursor-help">
+      Press <span class="cursor-key">0</span> to toggle cursor mode
+    </div>
+    
+    <!-- Virtual cursor -->
+    <div id="virtual-cursor" class="virtual-cursor">
+      <svg width="16" height="16" viewBox="0 0 16 16">
+        <path d="M1 1L4 14L8 8L14 4L1 1Z" fill="white" stroke="#5D5CDE" stroke-width="1"/>
+      </svg>
+    </div>
+    
+    <!-- Cursor mode indicator -->
+    <div id="cursor-indicator" class="cursor-indicator">
+      Cursor Mode
+    </div>
+  </div>
+
+  <script>
+    // Check for dark mode
+    function checkDarkMode() {
+      try {
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          document.body.classList.add('dark');
+        }
+      } catch(e) {
+        // matchMedia not supported in older browsers
+      }
+    }
+    
+    // Try to set up dark mode listener - fallback gracefully if not supported
+    function setupDarkModeListener() {
+      try {
+        if (window.matchMedia) {
+          window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(event) {
+            if (event.matches) {
+              document.body.classList.add('dark');
+            } else {
+              document.body.classList.remove('dark');
+            }
+          });
+        }
+      } catch(e) {
+        // Older browsers might not support this
+      }
+    }
+
+    // Sample data for categories with links (for initial data)
+    var categories = [
+      {
+        id: 'settings',
+        name: 'Settings',
+        icon: '??',
+        links: [
+          {
+            id: 'kaios-settings',
+            name: 'KaiOS Settings',
+            url: 'https://developer.kaiostech.com/docs/category/device-settings/',
+            icon: '??'
+          },
+          {
+            id: 'account-settings',
+            name: 'KaiOS Account',
+            url: 'https://www.kaiostech.com/signin/',
+            icon: '??'
+          }
+        ]
+      },
+      {
+        id: 'social',
+        name: 'Social Media',
+        icon: '??',
+        links: [
+          {
+            id: 'facebook',
+            name: 'Facebook',
+            url: 'https://m.facebook.com/',
+            icon: '??'
+          },
+          {
+            id: 'twitter',
+            name: 'Twitter/X',
+            url: 'https://mobile.twitter.com/',
+            icon: '??'
+          }
+        ]
+      },
+      {
+        id: 'news',
+        name: 'News',
+        icon: '??',
+        links: [
+          {
+            id: 'bbc',
+            name: 'BBC News',
+            url: 'https://www.bbc.com/news/lite',
+            icon: '??'
+          }
+        ]
+      }
+    ];
+
+    // App state
+    var appState = {
+      currentScreen: 'categories',
+      currentCategory: null,
+      editingCategory: null,
+      editingLink: null,
+      isEditMode: false,
+      navItems: [],
+      currentNavIndex: 0,
+      cursorMode: false,
+      cursorPosition: { x: 120, y: 160 },
+      cursorSpeed: 5
+    };
+
+    // Get DOM elements
+    var categoriesScreen = document.getElementById('categories-screen');
+    var linksScreen = document.getElementById('links-screen');
+    var editCategoryScreen = document.getElementById('edit-category-screen');
+    var editLinkScreen = document.getElementById('edit-link-screen');
+    var categoryList = document.getElementById('category-list');
+    var linkList = document.getElementById('link-list');
+    var categoryTitle = document.getElementById('category-title');
+    var editCategoryTitle = document.getElementById('edit-category-title');
+    var editLinkTitle = document.getElementById('edit-link-title');
+    var softkeyLeft = document.getElementById('softkey-left');
+    var softkeyCenter = document.getElementById('softkey-center');
+    var softkeyRight = document.getElementById('softkey-right');
+    var virtualCursor = document.getElementById('virtual-cursor');
+    var cursorIndicator = document.getElementById('cursor-indicator');
+
+    // Form elements
+    var categoryNameInput = document.getElementById('category-name');
+    var categoryIconInput = document.getElementById('category-icon');
+    var linkNameInput = document.getElementById('link-name');
+    var linkUrlInput = document.getElementById('link-url');
+    var linkIconInput = document.getElementById('link-icon');
+    var saveCategoryBtn = document.getElementById('save-category-btn');
+    var deleteCategoryBtn = document.getElementById('delete-category-btn');
+    var saveLinkBtn = document.getElementById('save-link-btn');
+    var deleteLinkBtn = document.getElementById('delete-link-btn');
+
+    // Local Storage functions
+    function saveToLocalStorage() {
+      try {
+        localStorage.setItem('kaiosWebLinks', JSON.stringify(categories));
+      } catch (e) {
+        showToast('Failed to save data');
+      }
+    }
+
+    function loadFromLocalStorage() {
+      try {
+        var savedData = localStorage.getItem('kaiosWebLinks');
+        if (savedData) {
+          categories = JSON.parse(savedData);
+          return true;
+        }
+      } catch (e) {
+        showToast('Failed to load saved data');
+      }
+      return false;
+    }
+
+    // Render categories
+    function renderCategories() {
+      var html = '';
+      
+      for (var i = 0; i < categories.length; i++) {
+        var category = categories[i];
+        html += '<div class="list-item" data-nav-index="' + i + '" data-id="' + category.id + '">' +
+                '<div class="item-icon">' + (category.icon || '??') + '</div>' +
+                '<div class="item-content">' +
+                '<div class="item-title">' + category.name + '</div>' +
+                '<div class="item-subtitle">' + category.links.length + ' link' + (category.links.length !== 1 ? 's' : '') + '</div>' +
+                '</div>' +
+                '</div>';
+      }
+      
+      if (categories.length === 0) {
+        html = '<div class="empty-state">' +
+               '<div class="empty-state-icon">??</div>' +
+               '<div>No categories yet</div>' +
+               '<div>Press "Add Category" to get started</div>' +
+               '</div>';
+      }
+      
+      categoryList.innerHTML = html;
+      updateNavItems();
+    }
+
+    // Render links for a category
+    function renderLinks(categoryId) {
+      var html = '';
+      var category = null;
+      
+      // Find the category
+      for (var i = 0; i < categories.length; i++) {
+        if (categories[i].id === categoryId) {
+          category = categories[i];
+          break;
+        }
+      }
+      
+      if (!category) return;
+      
+      categoryTitle.textContent = category.name;
+      
+      for (var j = 0; j < category.links.length; j++) {
+        var link = category.links[j];
+        html += '<div class="list-item" data-nav-index="' + (j + 1) + '" data-id="' + link.id + '">' +
+                '<div class="item-icon">' + (link.icon || '??') + '</div>' +
+                '<div class="item-content">' +
+                '<div class="item-title">' + link.name + '</div>' +
+                '<div class="item-subtitle">' + link.url + '</div>' +
+                '</div>' +
+                '</div>';
+      }
+      
+      if (category.links.length === 0) {
+        html = '<div class="empty-state">' +
+               '<div class="empty-state-icon">??</div>' +
+               '<div>No links yet</div>' +
+               '<div>Press "Add Link" to get started</div>' +
+               '</div>';
+      }
+      
+      linkList.innerHTML = html;
+      updateNavItems();
+    }
+
+    // Open link in browser
+    function openLink(linkId) {
+      var categoryId = appState.currentCategory;
+      var category = null;
+      var link = null;
+      
+      // Find the category
+      for (var i = 0; i < categories.length; i++) {
+        if (categories[i].id === categoryId) {
+          category = categories[i];
+          break;
+        }
+      }
+      
+      if (!category) return;
+      
+      // Find the link
+      for (var j = 0; j < category.links.length; j++) {
+        if (category.links[j].id === linkId) {
+          link = category.links[j];
+          break;
+        }
+      }
+      
+      if (!link) return;
+      
+      // Open link in new tab (required for iframe sandboxing)
+      window.open(link.url, '_blank');
+    }
+
+    // Show edit category screen
+    function showEditCategory(categoryId) {
+      appState.editingCategory = categoryId || null;
+      appState.isEditMode = !!categoryId;
+      
+      if (categoryId) {
+        var category = null;
+        
+        // Find the category
+        for (var i = 0; i < categories.length; i++) {
+          if (categories[i].id === categoryId) {
+            category = categories[i];
+            break;
+          }
+        }
+        
+        if (category) {
+          categoryNameInput.value = category.name;
+          categoryIconInput.value = category.icon || '';
+          editCategoryTitle.textContent = 'Edit Category';
+          deleteCategoryBtn.style.display = 'block';
+        }
+      } else {
+        categoryNameInput.value = '';
+        categoryIconInput.value = '';
+        editCategoryTitle.textContent = 'Add Category';
+        deleteCategoryBtn.style.display = 'none';
+      }
+      
+      switchScreen('edit-category');
+    }
+
+    // Show edit link screen
+    function showEditLink(linkId) {
+      appState.editingLink = linkId || null;
+      appState.isEditMode = !!linkId;
+      
+      if (linkId) {
+        var categoryId = appState.currentCategory;
+        var category = null;
+        var link = null;
+        
+        // Find the category
+        for (var i = 0; i < categories.length; i++) {
+          if (categories[i].id === categoryId) {
+            category = categories[i];
+            break;
+          }
+        }
+        
+        if (!category) return;
+        
+        // Find the link
+        for (var j = 0; j < category.links.length; j++) {
+          if (category.links[j].id === linkId) {
+            link = category.links[j];
+            break;
+          }
+        }
+        
+        if (link) {
+          linkNameInput.value = link.name;
+          linkUrlInput.value = link.url;
+          linkIconInput.value = link.icon || '';
+          editLinkTitle.textContent = 'Edit Link';
+          deleteLinkBtn.style.display = 'block';
+        }
+      } else {
+        linkNameInput.value = '';
+        linkUrlInput.value = '';
+        linkIconInput.value = '';
+        editLinkTitle.textContent = 'Add Link';
+        deleteLinkBtn.style.display = 'none';
+      }
+      
+      switchScreen('edit-link');
+    }
+
+    // Save category
+    function saveCategory() {
+      var name = categoryNameInput.value.trim();
+      if (!name) {
+        showToast('Category name is required');
+        return;
+      }
+      
+      var icon = categoryIconInput.value.trim();
+      var id = appState.editingCategory || name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+      
+      if (appState.isEditMode) {
+        // Edit existing category
+        var categoryIndex = -1;
+        
+        // Find the category index
+        for (var i = 0; i < categories.length; i++) {
+          if (categories[i].id === appState.editingCategory) {
+            categoryIndex = i;
+            break;
+          }
+        }
+        
+        if (categoryIndex !== -1) {
+          categories[categoryIndex].name = name;
+          categories[categoryIndex].icon = icon;
+        }
+      } else {
+        // Add new category
+        categories.push({
+          id: id,
+          name: name,
+          icon: icon,
+          links: []
+        });
+      }
+      
+      saveToLocalStorage();
+      renderCategories();
+      switchScreen('categories');
+      showToast(appState.isEditMode ? 'Category updated' : 'Category added');
+    }
+
+    // Delete category
+    function deleteCategory() {
+      var categoryId = appState.editingCategory;
+      var categoryIndex = -1;
+      
+      // Find the category index
+      for (var i = 0; i < categories.length; i++) {
+        if (categories[i].id === categoryId) {
+          categoryIndex = i;
+          break;
+        }
+      }
+      
+      if (categoryIndex !== -1) {
+        categories.splice(categoryIndex, 1);
+        saveToLocalStorage();
+        renderCategories();
+        switchScreen('categories');
+        showToast('Category deleted');
+      }
+    }
+
+    // Save link
+    function saveLink() {
+      var name = linkNameInput.value.trim();
+      if (!name) {
+        showToast('Link name is required');
+        return;
+      }
+      
+      var url = linkUrlInput.value.trim();
+      if (!url) {
+        showToast('URL is required');
+        return;
+      }
+      
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        showToast('URL must start with http:// or https://');
+        return;
+      }
+      
+      var icon = linkIconInput.value.trim();
+      var id = appState.editingLink || name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+      
+      var categoryId = appState.currentCategory;
+      var categoryIndex = -1;
+      
+      // Find the category index
+      for (var i = 0; i < categories.length; i++) {
+        if (categories[i].id === categoryId) {
+          categoryIndex = i;
+          break;
+        }
+      }
+      
+      if (categoryIndex === -1) return;
+      
+      if (appState.isEditMode) {
+        // Edit existing link
+        var linkIndex = -1;
+        
+        // Find the link index
+        for (var j = 0; j < categories[categoryIndex].links.length; j++) {
+          if (categories[categoryIndex].links[j].id === appState.editingLink) {
+            linkIndex = j;
+            break;
+          }
+        }
+        
+        if (linkIndex !== -1) {
+          categories[categoryIndex].links[linkIndex].name = name;
+          categories[categoryIndex].links[linkIndex].url = url;
+          categories[categoryIndex].links[linkIndex].icon = icon;
+        }
+      } else {
+        // Add new link
+        categories[categoryIndex].links.push({
+          id: id,
+          name: name,
+          url: url,
+          icon: icon
+        });
+      }
+      
+      saveToLocalStorage();
+      renderLinks(categoryId);
+      switchScreen('links');
+      showToast(appState.isEditMode ? 'Link updated' : 'Link added');
+    }
+
+    // Delete link
+    function deleteLink() {
+      var categoryId = appState.currentCategory;
+      var categoryIndex = -1;
+      
+      // Find the category index
+      for (var i = 0; i < categories.length; i++) {
+        if (categories[i].id === categoryId) {
+          categoryIndex = i;
+          break;
+        }
+      }
+      
+      if (categoryIndex === -1) return;
+      
+      var linkId = appState.editingLink;
+      var linkIndex = -1;
+      
+      // Find the link index
+      for (var j = 0; j < categories[categoryIndex].links.length; j++) {
+        if (categories[categoryIndex].links[j].id === linkId) {
+          linkIndex = j;
+          break;
+        }
+      }
+      
+      if (linkIndex !== -1) {
+        categories[categoryIndex].links.splice(linkIndex, 1);
+        saveToLocalStorage();
+        renderLinks(categoryId);
+        switchScreen('links');
+        showToast('Link deleted');
+      }
+    }
+
+    // Show toast message
+    function showToast(message) {
+      var toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(function() {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s';
+        setTimeout(function() {
+          if (toast.parentNode) {
+            toast.parentNode.removeChild(toast);
+          }
+        }, 300);
+      }, 2000);
+    }
+
+    // Switch between screens
+    function switchScreen(screenName) {
+      appState.currentScreen = screenName;
+      
+      // Get all screens
+      var screens = document.querySelectorAll('.screen');
+      
+      // Hide all screens
+      for (var i = 0; i < screens.length; i++) {
+        screens[i].classList.remove('active');
+      }
+      
+      // Show the requested screen
+      if (screenName === 'categories') {
+        categoriesScreen.classList.add('active');
+        softkeyLeft.textContent = 'Edit';
+        softkeyCenter.textContent = 'Open';
+        softkeyRight.textContent = 'Back';
+      } else if (screenName === 'links') {
+        linksScreen.classList.add('active');
+        softkeyLeft.textContent = 'Edit';
+        softkeyCenter.textContent = 'Open';
+        softkeyRight.textContent = 'Back';
+      } else if (screenName === 'edit-category') {
+        editCategoryScreen.classList.add('active');
+        softkeyLeft.textContent = '';
+        softkeyCenter.textContent = 'Save';
+        softkeyRight.textContent = 'Cancel';
+      } else if (screenName === 'edit-link') {
+        editLinkScreen.classList.add('active');
+        softkeyLeft.textContent = '';
+        softkeyCenter.textContent = 'Save';
+        softkeyRight.textContent = 'Cancel';
+      }
+      
+      updateNavItems();
+      setFocus(0);
+    }
+
+    // Update navigation items based on current screen
+    function updateNavItems() {
+      var activeScreen = null;
+      
+      // Get the active screen
+      if (appState.currentScreen === 'categories') {
+        activeScreen = categoriesScreen;
+      } else if (appState.currentScreen === 'links') {
+        activeScreen = linksScreen;
+      } else if (appState.currentScreen === 'edit-category') {
+        activeScreen = editCategoryScreen;
+      } else if (appState.currentScreen === 'edit-link') {
+        activeScreen = editLinkScreen;
+      }
+      
+      if (!activeScreen) return;
+      
+      // Get all navigable elements in the active screen
+      var navElements = activeScreen.querySelectorAll('[data-nav-index]');
+      
+      // Sort by navigation index
+      appState.navItems = [];
+      for (var i = 0; i < navElements.length; i++) {
+        var element = navElements[i];
+        if (element.style.display !== 'none') {
+          appState.navItems.push({
+            element: element,
+            index: parseInt(element.getAttribute('data-nav-index'))
+          });
+        }
+      }
+      
+      // Sort by index
+      appState.navItems.sort(function(a, b) {
+        return a.index - b.index;
+      });
+    }
+
+    // Set focus to a specific element by index
+    function setFocus(index) {
+      // Make sure we have navItems
+      if (appState.navItems.length === 0) {
+        updateNavItems();
+      }
+      
+      // Ensure index is within bounds
+      if (index < 0) index = 0;
+      if (index >= appState.navItems.length) index = appState.navItems.length - 1;
+      
+      // Remove focus from all elements
+      for (var i = 0; i < appState.navItems.length; i++) {
+        appState.navItems[i].element.classList.remove('focused');
+      }
+      
+      // Set focus to the current element
+      if (appState.navItems.length > 0) {
+        var focusedElement = appState.navItems[index].element;
+        focusedElement.classList.add('focused');
+        
+        // Scroll element into view if needed
+        if (focusedElement.scrollIntoView) {
+          focusedElement.scrollIntoView({ block: 'nearest' });
+        }
+        
+        appState.currentNavIndex = index;
+      }
+    }
+
+    // Toggle cursor mode
+    function toggleCursorMode() {
+      appState.cursorMode = !appState.cursorMode;
+      
+      if (appState.cursorMode) {
+        // Enable cursor mode
+        virtualCursor.style.display = 'block';
+        cursorIndicator.style.display = 'block';
+        
+        // Position cursor in the center if it's the first activation
+        if (!virtualCursor.style.left) {
+          positionCursor(appState.cursorPosition.x, appState.cursorPosition.y);
+        }
+        
+        // Show a toast with instructions
+        showToast('Cursor mode ON - Use D-pad to move cursor');
+      } else {
+        // Disable cursor mode
+        virtualCursor.style.display = 'none';
+        cursorIndicator.style.display = 'none';
+        
+        showToast('Cursor mode OFF');
+      }
+    }
+
+    // Position the virtual cursor
+    function positionCursor(x, y) {
+      // Bound cursor within screen
+      var screenWidth = window.innerWidth;
+      var screenHeight = window.innerHeight;
+      
+      var cursorWidth = 16;
+      var cursorHeight = 16;
+      
+      // Status bar and softkey bar heights
+      var statusBarHeight = 26; // Native KaiOS status bar
+      var softkeyBarHeight = 20;
+      
+      // Clamp to screen boundaries
+      x = Math.max(0, Math.min(x, screenWidth - cursorWidth));
+      y = Math.max(statusBarHeight, Math.min(y, screenHeight - softkeyBarHeight - cursorHeight));
+      
+      appState.cursorPosition.x = x;
+      appState.cursorPosition.y = y;
+      
+      virtualCursor.style.left = x + 'px';
+      virtualCursor.style.top = y + 'px';
+    }
+
+    // Simulate mouse click at cursor position
+    function simulateClick() {
+      var x = appState.cursorPosition.x;
+      var y = appState.cursorPosition.y;
+      
+      // Find element under cursor
+      var elementUnderCursor = document.elementFromPoint(x, y);
+      if (elementUnderCursor) {
+        // Simulate click
+        try {
+          elementUnderCursor.click();
+        } catch(e) {
+          // Some elements might not be clickable
+        }
+        
+        // Visual feedback
+        virtualCursor.style.transform = 'scale(0.8)';
+        setTimeout(function() {
+          virtualCursor.style.transform = 'scale(1)';
+        }, 100);
+      }
+    }
+
+    // Handle key presses (simulate KaiOS d-pad)
+    function handleKeyDown(e) {
+      var key = e.key || e.keyCode;
+      
+      // Convert key codes to key names for older browsers
+      if (typeof key === 'number') {
+        // Key code mappings
+        var keyCodes = {
+          37: 'ArrowLeft',
+          38: 'ArrowUp',
+          39: 'ArrowRight',
+          40: 'ArrowDown',
+          13: 'Enter',
+          8: 'Backspace',
+          48: '0', // 0 key for cursor mode
+          49: '1', // 1 key for left softkey
+          51: '3'  // 3 key for right softkey
+        };
+        key = keyCodes[key] || key;
+      }
+      
+      // Toggle cursor mode with '0' key
+      if (key === '0') {
+        toggleCursorMode();
+        e.preventDefault();
+        return;
+      }
+      
+      // Handle cursor mode navigation
+      if (appState.cursorMode) {
+        switch (key) {
+          case 'ArrowUp':
+            positionCursor(appState.cursorPosition.x, appState.cursorPosition.y - appState.cursorSpeed);
+            e.preventDefault();
+            break;
+          case 'ArrowDown':
+            positionCursor(appState.cursorPosition.x, appState.cursorPosition.y + appState.cursorSpeed);
+            e.preventDefault();
+            break;
+          case 'ArrowLeft':
+            positionCursor(appState.cursorPosition.x - appState.cursorSpeed, appState.cursorPosition.y);
+            e.preventDefault();
+            break;
+          case 'ArrowRight':
+            positionCursor(appState.cursorPosition.x + appState.cursorSpeed, appState.cursorPosition.y);
+            e.preventDefault();
+            break;
+          case 'Enter':
+            simulateClick();
+            e.preventDefault();
+            break;
+          case 'Backspace':
+            // Exit cursor mode
+            toggleCursorMode();
+            e.preventDefault();
+            break;
+        }
+        return;
+      }
+      
+      // For form inputs, don't override default behavior when typing
+      if (document.activeElement && document.activeElement.tagName === 'INPUT' && 
+          key !== 'ArrowUp' && 
+          key !== 'ArrowDown' && 
+          key !== 'Enter' && 
+          key !== 'Backspace' &&
+          key !== '1' &&
+          key !== '3') {
+        return;
+      }
+      
+      // If form input is active and arrow key is pressed, blur it first
+      if (document.activeElement && document.activeElement.tagName === 'INPUT' && 
+          (key === 'ArrowUp' || key === 'ArrowDown')) {
+        document.activeElement.blur();
+      }
+      
+      switch (key) {
+        case 'ArrowUp':
+          setFocus(appState.currentNavIndex - 1);
+          e.preventDefault();
+          break;
+        case 'ArrowDown':
+          setFocus(appState.currentNavIndex + 1);
+          e.preventDefault();
+          break;
+        case 'ArrowLeft':
+          // In some screens, left arrow can navigate backward
+          if (appState.currentScreen === 'links' && appState.currentNavIndex === 0) {
+            switchScreen('categories');
+          }
+          e.preventDefault();
+          break;
+        case 'ArrowRight':
+          // In some screens, right arrow can navigate forward
+          if (appState.currentScreen === 'categories' && appState.navItems[appState.currentNavIndex] && 
+              appState.navItems[appState.currentNavIndex].element.classList.contains('list-item')) {
+            var categoryId = appState.navItems[appState.currentNavIndex].element.getAttribute('data-id');
+            appState.currentCategory = categoryId;
+            renderLinks(categoryId);
+            switchScreen('links');
+          }
+          e.preventDefault();
+          break;
+        case 'Enter':
+          handleSelect();
+          e.preventDefault();
+          break;
+        case 'Backspace':
+          handleBack();
+          e.preventDefault();
+          break;
+        case '1': // Left softkey
+          handleSoftLeft();
+          e.preventDefault();
+          break;
+        case '3': // Right softkey
+          handleSoftRight();
+          e.preventDefault();
+          break;
+      }
+    }
+
+    // Handle select action (center button)
+    function handleSelect() {
+      // Check if we have a selected element
+      if (appState.navItems.length === 0 || appState.currentNavIndex < 0 || 
+          appState.currentNavIndex >= appState.navItems.length) {
+        return;
+      }
+      
+      var focusedElement = appState.navItems[appState.currentNavIndex].element;
+      
+      if (!focusedElement) return;
+      
+      // If it's an input field, focus it to allow typing
+      if (focusedElement.tagName === 'INPUT') {
+        focusedElement.focus();
+        return;
+      }
+      
+      if (appState.currentScreen === 'categories') {
+        if (focusedElement.id === 'add-category-btn') {
+          showEditCategory();
+        } else if (focusedElement.classList.contains('list-item')) {
+          var categoryId = focusedElement.getAttribute('data-id');
+          appState.currentCategory = categoryId;
+          renderLinks(categoryId);
+          switchScreen('links');
+        }
+      } else if (appState.currentScreen === 'links') {
+        if (focusedElement.id === 'back-to-categories') {
+          switchScreen('categories');
+        } else if (focusedElement.id === 'add-link-btn') {
+          showEditLink();
+        } else if (focusedElement.classList.contains('list-item')) {
+          var linkId = focusedElement.getAttribute('data-id');
+          openLink(linkId);
+        }
+      } else if (appState.currentScreen === 'edit-category') {
+        if (focusedElement.id === 'back-from-category-edit') {
+          switchScreen('categories');
+        } else if (focusedElement.id === 'save-category-btn') {
+          saveCategory();
+        } else if (focusedElement.id === 'delete-category-btn') {
+          deleteCategory();
+        }
+      } else if (appState.currentScreen === 'edit-link') {
+        if (focusedElement.id === 'back-from-link-edit') {
+          switchScreen('links');
+        } else if (focusedElement.id === 'save-link-btn') {
+          saveLink();
+        } else if (focusedElement.id === 'delete-link-btn') {
+          deleteLink();
+        }
+      }
+    }
+
+    // Handle back action (right soft key)
+    function handleBack() {
+      if (appState.currentScreen === 'categories') {
+        // This is the main screen, nothing to do
+      } else if (appState.currentScreen === 'links') {
+        switchScreen('categories');
+      } else if (appState.currentScreen === 'edit-category') {
+        switchScreen('categories');
+      } else if (appState.currentScreen === 'edit-link') {
+        switchScreen('links');
+      }
+    }
+
+    // Handle left soft key action
+    function handleSoftLeft() {
+      if (appState.currentScreen === 'categories') {
+        // Edit the currently focused category
+        if (appState.navItems[appState.currentNavIndex] && 
+            appState.navItems[appState.currentNavIndex].element.classList.contains('list-item')) {
+          var categoryId = appState.navItems[appState.currentNavIndex].element.getAttribute('data-id');
+          showEditCategory(categoryId);
+        }
+      } else if (appState.currentScreen === 'links') {
+        // Edit the currently focused link
+        if (appState.navItems[appState.currentNavIndex] && 
+            appState.navItems[appState.currentNavIndex].element.classList.contains('list-item')) {
+          var linkId = appState.navItems[appState.currentNavIndex].element.getAttribute('data-id');
+          showEditLink(linkId);
+        }
+      }
+    }
+
+    // Handle right soft key action
+    function handleSoftRight() {
+      handleBack();
+    }
+
+    // Initial setup
+    function init() {
+      // Try to load from localStorage
+      if (!loadFromLocalStorage()) {
+        // If failed, use default data
+        saveToLocalStorage();
+      }
+      
+      renderCategories();
+      
+      // Set dark mode
+      checkDarkMode();
+      setupDarkModeListener();
+      
+      // Attach event listeners
+      window.addEventListener('keydown', handleKeyDown, false);
+      
+      // For touch screen simulation - make items clickable
+      document.addEventListener('click', function(e) {
+        // If in cursor mode, clicks are handled separately
+        if (appState.cursorMode) return;
+        
+        // Find the closest clickable element
+        var listItem = findClosestElementWithClass(e.target, 'list-item');
+        var actionButton = findClosestElementWithId(e.target, [
+          'add-category-btn', 'add-link-btn', 'save-category-btn', 
+          'delete-category-btn', 'save-link-btn', 'delete-link-btn'
+        ]);
+        var backButton = findClosestElementWithId(e.target, [
+          'back-to-categories', 'back-from-category-edit', 'back-from-link-edit'
+        ]);
+        var inputField = findClosestElementWithTagName(e.target, 'INPUT');
+        
+        // Handle the appropriate click action
+        if (listItem) {
+          var navIndex = findNavIndexForElement(listItem);
+          if (navIndex !== -1) {
+            setFocus(navIndex);
+            handleSelect();
+          }
+        } else if (actionButton) {
+          var navIndex = findNavIndexForElement(actionButton);
+          if (navIndex !== -1) {
+            setFocus(navIndex);
+            handleSelect();
+          }
+        } else if (backButton) {
+          var navIndex = findNavIndexForElement(backButton);
+          if (navIndex !== -1) {
+            setFocus(navIndex);
+            handleSelect();
+          }
+        } else if (inputField) {
+          var navIndex = findNavIndexForElement(inputField);
+          if (navIndex !== -1) {
+            setFocus(navIndex);
+            handleSelect();
+          }
+        }
+      }, false);
+    }
+
+    // Helper function to find closest element with a specific class
+    function findClosestElementWithClass(el, className) {
+      while (el) {
+        if (el.classList && el.classList.contains(className)) {
+          return el;
+        }
+        el = el.parentElement;
+      }
+      return null;
+    }
+
+    // Helper function to find closest element with a specific id
+    function findClosestElementWithId(el, ids) {
+      if (typeof ids === 'string') {
+        ids = [ids];
+      }
+      
+      while (el) {
+        if (el.id && ids.indexOf(el.id) !== -1) {
+          return el;
+        }
+        el = el.parentElement;
+      }
+      return null;
+    }
+
+    // Helper function to find closest element with a specific tag name
+    function findClosestElementWithTagName(el, tagName) {
+      tagName = tagName.toUpperCase();
+      while (el) {
+        if (el.tagName === tagName) {
+          return el;
+        }
+        el = el.parentElement;
+      }
+      return null;
+    }
+
+    // Helper function to find nav index for an element
+    function findNavIndexForElement(element) {
+      for (var i = 0; i < appState.navItems.length; i++) {
+        if (appState.navItems[i].element === element) {
+          return i;
+        }
+      }
+      return -1;
+    }
+
+    // Start the app
+    init();
+  </script>
+</body>
+</html>
